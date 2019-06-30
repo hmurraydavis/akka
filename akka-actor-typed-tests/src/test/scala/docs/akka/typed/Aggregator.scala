@@ -4,6 +4,8 @@
 
 package docs.akka.typed
 
+//#behavior
+import scala.collection.immutable
 import scala.concurrent.duration.FiniteDuration
 import scala.reflect.ClassTag
 
@@ -21,19 +23,19 @@ object Aggregator {
       sendRequests: ActorRef[Reply] => Unit,
       expectedReplies: Int,
       replyTo: ActorRef[Aggregate],
-      aggregateReplies: Set[Reply] => Aggregate,
+      aggregateReplies: immutable.IndexedSeq[Reply] => Aggregate,
       timeout: FiniteDuration): Behavior[Command] = {
     Behaviors.setup { context =>
       context.setReceiveTimeout(timeout, ReceiveTimeout)
       val replyAdapter = context.messageAdapter[Reply](WrappedReply(_))
       sendRequests(replyAdapter)
 
-      def collecting(replies: Set[Reply]): Behavior[Command] = {
+      def collecting(replies: immutable.IndexedSeq[Reply]): Behavior[Command] = {
         Behaviors.receiveMessage {
           case WrappedReply(reply: Reply) =>
-            val newReplies = replies + reply
+            val newReplies = replies :+ reply
             if (newReplies.size == expectedReplies) {
-              val result = aggregateReplies(replies)
+              val result = aggregateReplies(newReplies)
               replyTo ! result
               Behaviors.stopped
             } else
@@ -46,8 +48,9 @@ object Aggregator {
         }
       }
 
-      collecting(Set.empty)
+      collecting(Vector.empty)
     }
   }
 
 }
+//#behavior

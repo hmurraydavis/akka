@@ -4,6 +4,7 @@
 
 package docs.akka.typed
 
+//#behavior
 import scala.concurrent.duration.FiniteDuration
 import scala.reflect.ClassTag
 
@@ -11,7 +12,7 @@ import akka.actor.typed.ActorRef
 import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 
-object ScatterGather {
+object TailChopping {
 
   sealed trait Command
   private case object RequestTimeout extends Command
@@ -58,3 +59,4 @@ object ScatterGather {
   }
 
 }
+//#behavior
