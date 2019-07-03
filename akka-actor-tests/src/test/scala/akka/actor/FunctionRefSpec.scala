@@ -36,7 +36,9 @@ object FunctionRefSpec {
 
 }
 
-class FunctionRefSpec extends AkkaSpec with ImplicitSender {
+class FunctionRefSpec extends AkkaSpec("""
+  akka.actor.allow-java-serialization = on
+  """) with ImplicitSender {
   import FunctionRefSpec._
 
   def commonTests(s: ActorRef) = {

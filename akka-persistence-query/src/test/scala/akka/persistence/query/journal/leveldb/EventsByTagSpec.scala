@@ -35,11 +35,7 @@ object EventsByTagSpec {
       max-buffer-size = 2
     }
     akka.test.single-expect-default = 10s
-    
-    leveldb-no-refresh = $${akka.persistence.query.journal.leveldb}
-    leveldb-no-refresh {
-      refresh-interval = 10m
-    }
+    akka.actor.allow-java-serialization = on
     """
 
 }

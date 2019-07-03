@@ -67,7 +67,8 @@ object RemoteWatcherSpec {
 
 }
 
-class RemoteWatcherSpec extends AkkaSpec("""akka {
+class RemoteWatcherSpec extends AkkaSpec("""
+     akka {
        loglevel = INFO
        log-dead-letters-during-shutdown = false
        actor.provider = remote
@@ -77,7 +78,10 @@ class RemoteWatcherSpec extends AkkaSpec("""akka {
        }
        remote.artery.enabled = off
        remote.use-unsafe-remote-features-without-cluster = on
-     }""") with ImplicitSender {
+     }
+     akka.actor.allow-java-serialization = on
+     akka.actor.warn-about-java-serializer-usage = off
+     """) with ImplicitSender {
 
   import RemoteWatcher._
   import RemoteWatcherSpec._

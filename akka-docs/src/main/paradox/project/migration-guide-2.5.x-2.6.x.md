@@ -183,6 +183,11 @@ Classic remoting is deprecated but can be used in `2.6.` Explicitly disable Arte
 specific to classic remoting needs to be moved to `akka.remote.classic`. To see which configuration options
 are specific to classic search for them in: [`akka-remote/reference.conf`](/akka-remote/src/main/resources/reference.conf)
 
+## Java Serialization
+
+Consistent hashing is serializing the hash key, unless it's bytes or String. If you use consistent hashing router
+you might have to add a serializer for you hash keys, unless one of the default serializer are not handling that
+type and it was previously "accidentally" serialized with Java serialization.
 
 ## Configuration and behavior changes
 

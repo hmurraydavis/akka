@@ -30,6 +30,8 @@ object RestartNode3MultiJvmSpec extends MultiNodeConfig {
     debugConfig(on = false).withFallback(ConfigFactory.parseString("""
       akka.cluster.auto-down-unreachable-after = off
       akka.cluster.allow-weakly-up-members = off
+      akka.actor.allow-java-serialization = on
+      akka.actor.warn-about-java-serializer-usage = off
       """)).withFallback(MultiNodeClusterSpec.clusterConfig))
 
   testTransport(on = true)

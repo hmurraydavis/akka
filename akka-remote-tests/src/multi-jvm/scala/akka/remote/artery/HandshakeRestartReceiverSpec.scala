@@ -28,6 +28,8 @@ object HandshakeRestartReceiverSpec extends MultiNodeConfig {
            enabled = on
          }
        }
+       akka.actor.allow-java-serialization = on
+       akka.actor.warn-about-java-serializer-usage = off
        """)))
 
   class Subject extends Actor {

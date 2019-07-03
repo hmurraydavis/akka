@@ -27,6 +27,8 @@ object SystemMessageDeliveryStressTest {
       remote.artery.enabled = false
       actor.provider = remote
       actor.serialize-messages = off
+      actor.allow-java-serialization = on
+      actor.warn-about-java-serializer-usage = off
 
       remote.classic {
         log-remote-lifecycle-events = on

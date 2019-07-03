@@ -9,9 +9,9 @@ import akka.cluster.sharding.ShardCoordinator.Internal.{ HandOff, ShardStopped }
 import akka.cluster.sharding.ShardRegion.Passivate
 import akka.cluster.sharding.ShardRegion.GetCurrentRegions
 import akka.cluster.sharding.ShardRegion.CurrentRegions
-
 import language.postfixOps
 import scala.concurrent.duration._
+
 import com.typesafe.config.ConfigFactory
 import akka.actor._
 import akka.cluster.{ Cluster, MultiNodeClusterSpec }
@@ -31,16 +31,17 @@ import org.apache.commons.io.FileUtils
 import akka.cluster.singleton.ClusterSingletonManager
 import akka.cluster.singleton.ClusterSingletonManagerSettings
 import akka.pattern.BackoffOpts
+import akka.serialization.jackson.CborSerializable
 
 object ClusterShardingSpec {
   //#counter-actor
-  case object Increment
-  case object Decrement
-  final case class Get(counterId: Long)
-  final case class EntityEnvelope(id: Long, payload: Any)
+  case object Increment extends CborSerializable
+  case object Decrement extends CborSerializable
+  final case class Get(counterId: Long) extends CborSerializable
+  final case class EntityEnvelope(id: Long, payload: Any) extends CborSerializable
 
-  case object Stop
-  final case class CounterChanged(delta: Int)
+  case object Stop extends CborSerializable
+  final case class CounterChanged(delta: Int) extends CborSerializable
 
   class Counter extends PersistentActor {
     import ShardRegion.Passivate
@@ -165,6 +166,16 @@ abstract class ClusterShardingSpecConfig(val mode: String, val entityRecoveryStr
       }
     }
     akka.testconductor.barrier-timeout = 70s
+    akka.actor.serialization-bindings {
+      # some java serialization because of leveldb-shared
+      "akka.persistence.journal.AsyncWriteTarget$$WriteMessages" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$DeleteMessagesTo" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$ReplayMessages" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$ReplaySuccess" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$ReplayFailure" = java-test
+      
+      "scala.collection.immutable.Vector" = java-test
+    }
     """).withFallback(MultiNodeClusterSpec.clusterConfig))
   nodeConfig(sixth) {
     ConfigFactory.parseString("""akka.cluster.roles = ["frontend"]""")

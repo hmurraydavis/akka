@@ -24,6 +24,8 @@ object RemoteRestartedQuarantinedSpec extends MultiNodeConfig {
       akka.loglevel = WARNING
       akka.remote.log-remote-lifecycle-events = WARNING
       akka.remote.artery.enabled = on
+      akka.actor.allow-java-serialization = on
+      akka.actor.warn-about-java-serializer-usage = off
       """)).withFallback(RemotingMultiNodeSpec.commonConfig))
 
   class Subject extends Actor {

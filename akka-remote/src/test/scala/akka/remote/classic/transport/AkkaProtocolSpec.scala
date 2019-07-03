@@ -66,6 +66,8 @@ class AkkaProtocolSpec extends AkkaSpec("""akka.actor.provider = remote """) wit
         }
 
       }
+      akka.actor.allow-java-serialization = on
+      akka.actor.warn-about-java-serializer-usage = off
   """).withFallback(system.settings.config)
 
   val localAddress = Address("test", "testsystem", "testhost", 1234)

@@ -42,6 +42,9 @@ class ClusterSingletonRestart2Spec extends AkkaSpec("""
       port = 0
     }
   }
+  akka.actor.serialization-bindings {
+    "akka.cluster.UniqueAddress" = jackson-cbor
+  }
   """) {
 
   val sys1 = ActorSystem(system.name, system.settings.config)

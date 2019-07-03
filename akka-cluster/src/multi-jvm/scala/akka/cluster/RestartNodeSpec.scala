@@ -36,6 +36,8 @@ object RestartNodeMultiJvmSpec extends MultiNodeConfig {
       akka.cluster.auto-down-unreachable-after = 5s
       akka.cluster.allow-weakly-up-members = off
       #akka.remote.use-passive-connections = off
+      akka.actor.allow-java-serialization = on
+      akka.actor.warn-about-java-serializer-usage = off
       """)).withFallback(MultiNodeClusterSpec.clusterConfig))
 
   /**

@@ -41,7 +41,9 @@ object AkkaProtocolStressTest {
       }
 
     }
-                                                   """)
+    akka.actor.allow-java-serialization = on
+    akka.actor.warn-about-java-serializer-usage = off
+    """)
 
   object ResendFinal
 

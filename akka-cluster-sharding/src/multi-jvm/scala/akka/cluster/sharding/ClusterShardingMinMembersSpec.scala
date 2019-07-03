@@ -62,6 +62,14 @@ abstract class ClusterShardingMinMembersSpecConfig(val mode: String) extends Mul
       map-size = 10 MiB
     }
     akka.cluster.min-nr-of-members = 3
+    akka.actor.serialization-bindings {
+      # some java serialization because of leveldb-shared
+      "akka.persistence.journal.AsyncWriteTarget$$WriteMessages" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$DeleteMessagesTo" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$ReplayMessages" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$ReplaySuccess" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$ReplayFailure" = java-test
+    }
     """).withFallback(MultiNodeClusterSpec.clusterConfig))
 }
 

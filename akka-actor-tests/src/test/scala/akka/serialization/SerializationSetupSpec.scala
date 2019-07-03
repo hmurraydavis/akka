@@ -58,6 +58,8 @@ object SerializationSetupSpec {
     akka {
       actor {
         serialize-messages = off
+        
+        allow-java-serialization = on
 
         # this is by default on, but tests are running with off, use defaults here
         warn-about-java-serializer-usage = on

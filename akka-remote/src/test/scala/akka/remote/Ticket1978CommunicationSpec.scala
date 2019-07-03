@@ -55,6 +55,8 @@ object Configuration {
         }
       }
     }
+    akka.actor.allow-java-serialization = on
+    akka.actor.warn-about-java-serializer-usage = off
                      """
 
   final case class CipherConfig(

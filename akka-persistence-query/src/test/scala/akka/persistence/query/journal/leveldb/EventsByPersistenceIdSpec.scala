@@ -22,6 +22,7 @@ object EventsByPersistenceIdSpec {
     akka.persistence.journal.leveldb.dir = "target/journal-EventsByPersistenceIdSpec"
     akka.test.single-expect-default = 10s
     akka.persistence.query.journal.leveldb.refresh-interval = 1s
+    akka.actor.allow-java-serialization = on
     """
 }
 

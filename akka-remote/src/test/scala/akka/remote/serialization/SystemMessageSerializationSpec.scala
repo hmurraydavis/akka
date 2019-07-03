@@ -7,6 +7,7 @@ package akka.remote.serialization
 import akka.actor.{ ActorInitializationException, ExtendedActorSystem, InternalActorRef }
 import akka.dispatch.sysmsg._
 import akka.serialization.SerializationExtension
+import akka.testkit.JavaSerializable
 import akka.testkit.{ AkkaSpec, TestProbe }
 import com.typesafe.config.ConfigFactory
 
@@ -17,7 +18,7 @@ object SystemMessageSerializationSpec {
 
   val testConfig = ConfigFactory.parseString(serializationTestOverrides).withFallback(AkkaSpec.testConf)
 
-  class TestException(msg: String) extends RuntimeException(msg) {
+  class TestException(msg: String) extends RuntimeException(msg) with JavaSerializable {
     override def equals(other: Any): Boolean = other match {
       case e: TestException => e.getMessage == getMessage
       case _                => false

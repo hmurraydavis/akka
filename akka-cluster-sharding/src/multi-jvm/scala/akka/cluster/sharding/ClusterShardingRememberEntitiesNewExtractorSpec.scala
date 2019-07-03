@@ -76,6 +76,14 @@ abstract class ClusterShardingRememberEntitiesNewExtractorSpecConfig(val mode: S
       dir = target/ShardingRememberEntitiesNewExtractorSpec/sharding-ddata
       map-size = 10 MiB
     }
+    akka.actor.serialization-bindings {
+      # some java serialization because of leveldb-shared
+      "akka.persistence.journal.AsyncWriteTarget$$WriteMessages" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$DeleteMessagesTo" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$ReplayMessages" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$ReplaySuccess" = java-test
+      "akka.persistence.journal.AsyncWriteTarget$$ReplayFailure" = java-test
+    }
     """).withFallback(MultiNodeClusterSpec.clusterConfig))
 
   val roleConfig = ConfigFactory.parseString("""

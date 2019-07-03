@@ -28,7 +28,10 @@ object PropsCreationSpec {
 
 }
 
-class PropsCreationSpec extends AkkaSpec("akka.actor.serialize-creators = on") {
+class PropsCreationSpec extends AkkaSpec("""
+  akka.actor.serialize-creators = on
+  akka.actor.allow-java-serialization = on
+  """) {
 
   import akka.actor.PropsCreationSpec._
 

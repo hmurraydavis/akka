@@ -101,8 +101,8 @@ class RemoteDeathWatchSpec
     // this immediately. With TCP it will trigger after handshake timeout. Can we see the UnknownHostException
     // reason somehow and fail the stream immediately for that case?
     val path = RootActorPath(Address("akka", system.name, "unknownhost2", 2552)) / "user" / "subject"
-    system.actorSelection(path) ! Identify(path)
-    expectMsg(60.seconds, ActorIdentity(path, None))
+    system.actorSelection(path) ! Identify(path.toString)
+    expectMsg(60.seconds, ActorIdentity(path.toString, None))
   }
 
 }

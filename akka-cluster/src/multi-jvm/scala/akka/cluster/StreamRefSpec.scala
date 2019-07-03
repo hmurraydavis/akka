@@ -18,6 +18,7 @@ import akka.actor.Props
 import akka.remote.testkit.MultiNodeConfig
 import akka.remote.testkit.MultiNodeSpec
 import akka.remote.transport.ThrottlerTransportAdapter.Direction
+import akka.serialization.jackson.CborSerializable
 import akka.stream.ActorMaterializer
 import akka.stream.RemoteStreamRefActorTerminatedException
 import akka.stream.SinkRef
@@ -43,7 +44,7 @@ object StreamRefSpec extends MultiNodeConfig {
 
   testTransport(on = true)
 
-  case class RequestLogs(streamId: Int)
+  case class RequestLogs(streamId: Int) extends CborSerializable
   case class LogsOffer(streamId: Int, sourceRef: SourceRef[String])
 
   object DataSource {

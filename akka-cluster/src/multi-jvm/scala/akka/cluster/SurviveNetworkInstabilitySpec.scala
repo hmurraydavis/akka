@@ -8,20 +8,20 @@ import com.typesafe.config.ConfigFactory
 import akka.remote.testkit.MultiNodeConfig
 import akka.remote.testkit.MultiNodeSpec
 import akka.remote.transport.ThrottlerTransportAdapter.Direction
-
 import scala.concurrent.duration._
-import akka.testkit._
 
+import akka.testkit._
 import akka.remote.testconductor.RoleName
 import akka.actor.Props
 import akka.actor.Actor
-
 import scala.util.control.NoStackTrace
+
 import akka.remote.{ QuarantinedEvent, RemoteActorRefProvider }
 import akka.actor.ExtendedActorSystem
 import akka.actor.ActorRef
 import akka.actor.PoisonPill
 import akka.actor.Terminated
+import akka.serialization.jackson.CborSerializable
 
 object SurviveNetworkInstabilityMultiJvmSpec extends MultiNodeConfig {
   val first = role("first")
@@ -50,8 +50,8 @@ object SurviveNetworkInstabilityMultiJvmSpec extends MultiNodeConfig {
     }
   }
 
-  case class Targets(refs: Set[ActorRef])
-  case object TargetsRegistered
+  case class Targets(refs: Set[ActorRef]) extends CborSerializable
+  case object TargetsRegistered extends CborSerializable
 
   class Watcher extends Actor {
     var targets = Set.empty[ActorRef]

@@ -32,6 +32,8 @@ object RestartNode2SpecMultiJvmSpec extends MultiNodeConfig {
       akka.cluster.allow-weakly-up-members = off
       akka.remote.retry-gate-closed-for = 45s
       akka.remote.log-remote-lifecycle-events = INFO
+      akka.actor.allow-java-serialization = on
+      akka.actor.warn-about-java-serializer-usage = off
       """)).withFallback(MultiNodeClusterSpec.clusterConfig))
 
 }

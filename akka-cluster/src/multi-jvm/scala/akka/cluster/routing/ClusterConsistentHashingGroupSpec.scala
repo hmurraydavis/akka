@@ -16,8 +16,8 @@ import scala.concurrent.Await
 
 object ClusterConsistentHashingGroupMultiJvmSpec extends MultiNodeConfig {
 
-  case object Get
-  final case class Collected(messages: Set[Any])
+  case object Get extends JavaSerializable
+  final case class Collected(messages: Set[Any]) extends JavaSerializable
 
   class Destination extends Actor {
     var receivedMessages = Set.empty[Any]

@@ -36,6 +36,7 @@ object TypedActorSpec {
     }
     akka.actor.serializers.sample = "akka.actor.TypedActorSpec$SampleSerializerWithStringManifest$"
     akka.actor.serialization-bindings."akka.actor.TypedActorSpec$WithStringSerializedClass" = sample
+    akka.actor.allow-java-serialization = on
     akka.actor.serialize-messages = off
     """
 

@@ -20,6 +20,7 @@ object AllPersistenceIdsSpec {
     akka.persistence.journal.plugin = "akka.persistence.journal.leveldb"
     akka.persistence.journal.leveldb.dir = "target/journal-AllPersistenceIdsSpec"
     akka.test.single-expect-default = 10s
+    akka.actor.allow-java-serialization = on
     """
 }
 

@@ -36,41 +36,41 @@ def isScala213: Boolean = System.getProperty("akka.build.scalaVersion", "").star
 
 // When this is updated the set of modules in ActorSystem.allModules should also be updated
 lazy val aggregatedProjects: Seq[ProjectReference] = List[ProjectReference](
-    actor,
-    actorTests,
-    actorTestkitTyped,
-    actorTyped,
-    actorTypedTests,
-    benchJmh,
-    benchJmhTyped,
-    cluster,
-    clusterMetrics,
-    clusterSharding,
-    clusterShardingTyped,
-    clusterTools,
-    clusterTyped,
-    coordination,
-    discovery,
-    distributedData,
-    docs,
-    jackson,
-    multiNodeTestkit,
-    osgi,
-    persistence,
-    persistenceQuery,
-    persistenceShared,
-    persistenceTck,
-    persistenceTyped,
-    protobuf,
-    remote,
-    remoteTests,
-    slf4j,
-    stream,
-    streamTestkit,
-    streamTests,
-    streamTestsTck,
-    streamTyped,
-    testkit)
+  actor,
+  actorTests,
+  actorTestkitTyped,
+  actorTyped,
+  actorTypedTests,
+  benchJmh,
+  benchJmhTyped,
+  cluster,
+  clusterMetrics,
+  clusterSharding,
+  clusterShardingTyped,
+  clusterTools,
+  clusterTyped,
+  coordination,
+  discovery,
+  distributedData,
+  docs,
+  jackson,
+  multiNodeTestkit,
+  osgi,
+  persistence,
+  persistenceQuery,
+  persistenceShared,
+  persistenceTck,
+  persistenceTyped,
+  protobuf,
+  remote,
+  remoteTests,
+  slf4j,
+  stream,
+  streamTestkit,
+  streamTests,
+  streamTestsTck,
+  streamTyped,
+  testkit)
 
 lazy val root = Project(id = "akka", base = file("."))
   .aggregate(aggregatedProjects: _*)
@@ -303,7 +303,14 @@ lazy val protobuf = akkaModule("akka-protobuf")
   .disablePlugins(MimaPlugin)
 
 lazy val remote = akkaModule("akka-remote")
-  .dependsOn(actor, stream, actorTests % "test->test", testkit % "test->test", streamTestkit % "test", protobuf)
+  .dependsOn(
+    actor,
+    stream,
+    actorTests % "test->test",
+    testkit % "test->test",
+    streamTestkit % "test",
+    protobuf,
+    jackson % "test->test")
   .settings(Dependencies.remote)
   .settings(AutomaticModuleName.settings("akka.remote"))
   .settings(OSGi.remote)
@@ -311,7 +318,12 @@ lazy val remote = akkaModule("akka-remote")
   .settings(parallelExecution in Test := false)
 
 lazy val remoteTests = akkaModule("akka-remote-tests")
-  .dependsOn(actorTests % "test->test", remote % "test->test", streamTestkit % "test", multiNodeTestkit)
+  .dependsOn(
+    actorTests % "test->test",
+    remote % "test->test",
+    streamTestkit % "test",
+    multiNodeTestkit,
+    jackson % "test->test")
   .settings(Dependencies.remoteTests)
   .settings(Protobuf.settings)
   .settings(parallelExecution in Test := false)
@@ -385,7 +397,8 @@ lazy val persistenceTyped = akkaModule("akka-persistence-typed")
     persistence % "compile->compile;test->test",
     persistenceQuery % "test",
     actorTypedTests % "test->test",
-    actorTestkitTyped % "compile->compile;test->test")
+    actorTestkitTyped % "compile->compile;test->test",
+    jackson % "test->test")
   .settings(Dependencies.persistenceShared)
   .settings(AutomaticModuleName.settings("akka.persistence.typed"))
   .settings(OSGi.persistenceTyped)
@@ -401,7 +414,8 @@ lazy val clusterTyped = akkaModule("akka-cluster-typed")
     protobuf,
     actorTestkitTyped % "test->test",
     actorTypedTests % "test->test",
-    remoteTests % "test->test")
+    remoteTests % "test->test",
+    jackson % "test->test")
   .settings(AutomaticModuleName.settings("akka.cluster.typed"))
   .configs(MultiJvm)
   .enablePlugins(MultiNodeScalaTest)
@@ -414,7 +428,8 @@ lazy val clusterShardingTyped = akkaModule("akka-cluster-sharding-typed")
     actorTestkitTyped % "test->test",
     actorTypedTests % "test->test",
     persistenceTyped % "test->test",
-    remoteTests % "test->test")
+    remoteTests % "test->test",
+    jackson % "test->test")
   .settings(AutomaticModuleName.settings("akka.cluster.sharding.typed"))
   // To be able to import ContainerFormats.proto
   .settings(Protobuf.importPath := Some(baseDirectory.value / ".." / "akka-remote" / "src" / "main" / "protobuf"))

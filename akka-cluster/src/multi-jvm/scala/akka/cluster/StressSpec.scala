@@ -165,6 +165,8 @@ private[cluster] object StressMultiJvmSpec extends MultiNodeConfig {
         }
       }
     }
+    akka.actor.allow-java-serialization = on
+    akka.actor.warn-about-java-serializer-usage = off
     """))
 
   class Settings(conf: Config) {

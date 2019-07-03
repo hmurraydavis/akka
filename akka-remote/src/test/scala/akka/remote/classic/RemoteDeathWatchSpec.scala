@@ -21,6 +21,7 @@ akka {
         deployment {
             /watchers.remote = "akka.tcp://other@localhost:2666"
         }
+
     }
     remote.use-unsafe-remote-features-without-cluster = on
     remote.artery.enabled = off
@@ -33,6 +34,8 @@ akka {
       }
     }
 }
+akka.actor.allow-java-serialization = on
+akka.actor.warn-about-java-serializer-usage = off
 """))
     with ImplicitSender
     with DefaultTimeout

@@ -76,6 +76,9 @@ class ConfigSpec extends AkkaSpec(ConfigFactory.defaultReference(ActorSystem.fin
 
         getBoolean("akka.coordinated-shutdown.run-by-actor-system-terminate") should ===(true)
         settings.CoordinatedShutdownRunByActorSystemTerminate should ===(true)
+
+        getBoolean("akka.actor.allow-java-serialization") should ===(false)
+        settings.AllowJavaSerialization should ===(false)
       }
 
       {
