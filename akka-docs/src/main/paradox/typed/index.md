@@ -22,5 +22,6 @@
 * [persistence](persistence.md)
 * [fsm](fsm.md)
 * [testing](testing.md)
+* [actors](style-guide.md)
 
 @@@
