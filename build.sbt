@@ -118,7 +118,7 @@ lazy val benchJmhTyped = akkaModule("akka-bench-jmh-typed")
   .disablePlugins(MimaPlugin, WhiteSourcePlugin, ValidatePullRequest, CopyrightHeaderInPr)
 
 lazy val cluster = akkaModule("akka-cluster")
-  .dependsOn(remote, remoteTests % "test->test", testkit % "test->test")
+  .dependsOn(remote, remoteTests % "test->test", testkit % "test->test", jackson % "test->test")
   .settings(Dependencies.cluster)
   .settings(AutomaticModuleName.settings("akka.cluster"))
   .settings(OSGi.cluster)
@@ -128,7 +128,10 @@ lazy val cluster = akkaModule("akka-cluster")
   .enablePlugins(MultiNodeScalaTest)
 
 lazy val clusterMetrics = akkaModule("akka-cluster-metrics")
-  .dependsOn(cluster % "compile->compile;test->test;multi-jvm->multi-jvm", slf4j % "test->compile")
+  .dependsOn(
+    cluster % "compile->compile;test->test;multi-jvm->multi-jvm",
+    slf4j % "test->compile",
+    jackson % "test->test")
   .settings(OSGi.clusterMetrics)
   .settings(Dependencies.clusterMetrics)
   .settings(AutomaticModuleName.settings("akka.cluster.metrics"))
@@ -147,7 +150,8 @@ lazy val clusterSharding = akkaModule("akka-cluster-sharding")
     cluster % "compile->compile;test->test;multi-jvm->multi-jvm",
     distributedData,
     persistence % "compile->compile",
-    clusterTools % "compile->compile;test->test")
+    clusterTools % "compile->compile;test->test",
+    jackson % "test->test")
   .settings(Dependencies.clusterSharding)
   .settings(AutomaticModuleName.settings("akka.cluster.sharding"))
   .settings(OSGi.clusterSharding)
@@ -156,7 +160,7 @@ lazy val clusterSharding = akkaModule("akka-cluster-sharding")
   .enablePlugins(MultiNode, ScaladocNoVerificationOfDiagrams)
 
 lazy val clusterTools = akkaModule("akka-cluster-tools")
-  .dependsOn(cluster % "compile->compile;test->test;multi-jvm->multi-jvm", coordination)
+  .dependsOn(cluster % "compile->compile;test->test;multi-jvm->multi-jvm", coordination, jackson % "test->test")
   .settings(Dependencies.clusterTools)
   .settings(AutomaticModuleName.settings("akka.cluster.tools"))
   .settings(OSGi.clusterTools)
@@ -165,7 +169,7 @@ lazy val clusterTools = akkaModule("akka-cluster-tools")
   .enablePlugins(MultiNode, ScaladocNoVerificationOfDiagrams)
 
 lazy val distributedData = akkaModule("akka-distributed-data")
-  .dependsOn(cluster % "compile->compile;test->test;multi-jvm->multi-jvm")
+  .dependsOn(cluster % "compile->compile;test->test;multi-jvm->multi-jvm", jackson % "test->test")
   .settings(Dependencies.distributedData)
   .settings(AutomaticModuleName.settings("akka.cluster.ddata"))
   .settings(OSGi.distributedData)
@@ -399,6 +403,7 @@ lazy val persistenceTyped = akkaModule("akka-persistence-typed")
     actorTypedTests % "test->test",
     actorTestkitTyped % "compile->compile;test->test",
     jackson % "test->test")
+  .settings(javacOptions += "-parameters") // for Jackson
   .settings(Dependencies.persistenceShared)
   .settings(AutomaticModuleName.settings("akka.persistence.typed"))
   .settings(OSGi.persistenceTyped)
@@ -430,6 +435,7 @@ lazy val clusterShardingTyped = akkaModule("akka-cluster-sharding-typed")
     persistenceTyped % "test->test",
     remoteTests % "test->test",
     jackson % "test->test")
+  .settings(javacOptions += "-parameters") // for Jackson
   .settings(AutomaticModuleName.settings("akka.cluster.sharding.typed"))
   // To be able to import ContainerFormats.proto
   .settings(Protobuf.importPath := Some(baseDirectory.value / ".." / "akka-remote" / "src" / "main" / "protobuf"))

@@ -35,7 +35,8 @@ public class AccountExampleTest extends JUnitSuite {
               + "akka.remote.classic.netty.tcp.port = 0 \n"
               + "akka.remote.artery.canonical.port = 0 \n"
               + "akka.remote.artery.canonical.hostname = 127.0.0.1 \n"
-              + "akka.persistence.journal.plugin = \"akka.persistence.journal.inmem\" \n");
+              + "akka.persistence.journal.plugin = \"akka.persistence.journal.inmem\" \n"
+              + "akka.persistence.journal.inmem.test-serialization = on \n");
 
   @ClassRule public static final TestKitJunitResource testKit = new TestKitJunitResource(config);
 
@@ -141,5 +142,36 @@ public class AccountExampleTest extends JUnitSuite {
             .toCompletableFuture()
             .get(3, TimeUnit.SECONDS);
     assertEquals(BigDecimal.valueOf(90), balance);
+  }
+
+  @Test
+  public void verifySerialization() {
+    TestProbe<OperationResult> opProbe = testKit.createTestProbe();
+    testKit.verifySerialization(new CreateAccount(opProbe.getRef()), false);
+    Deposit deposit2 =
+        testKit.verifySerialization(new Deposit(BigDecimal.valueOf(100), opProbe.getRef()), false);
+    assertEquals(BigDecimal.valueOf(100), deposit2.amount);
+    assertEquals(opProbe.getRef(), deposit2.replyTo());
+    testKit.verifySerialization(new Withdraw(BigDecimal.valueOf(90), opProbe.getRef()), false);
+    testKit.verifySerialization(new CloseAccount(opProbe.getRef()), false);
+
+    testKit.verifySerialization(Confirmed.INSTANCE, false);
+    testKit.verifySerialization(new Rejected("overdraft"), false);
+
+    TestProbe<CurrentBalance> getProbe = testKit.createTestProbe();
+    testKit.verifySerialization(new GetBalance(getProbe.getRef()), false);
+
+    testKit.verifySerialization(new CurrentBalance(BigDecimal.valueOf(100)), false);
+
+    testKit.verifySerialization(new AccountCreated(), false);
+    testKit.verifySerialization(new Deposited(BigDecimal.valueOf(100)), false);
+    testKit.verifySerialization(new Withdrawn(BigDecimal.valueOf(90)), false);
+    testKit.verifySerialization(new AccountClosed(), false);
+
+    testKit.verifySerialization(new EmptyAccount(), false);
+    OpenedAccount openedAccount2 =
+        testKit.verifySerialization(new OpenedAccount(BigDecimal.valueOf(100)), false);
+    assertEquals(BigDecimal.valueOf(100), openedAccount2.balance);
+    testKit.verifySerialization(new ClosedAccount(), false);
   }
 }

@@ -18,9 +18,10 @@ import akka.actor.testkit.typed.internal.ActorTestKitGuardian
 import akka.actor.testkit.typed.internal.TestKitUtils
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
-
 import scala.concurrent.Await
 import scala.concurrent.duration._
+
+import akka.serialization.SerializationExtension
 import akka.util.Timeout
 
 object ActorTestKit {
@@ -184,6 +185,24 @@ final class ActorTestKit private[akka] (val name: String, val config: Config, se
    * @tparam M the type of messages the probe should accept
    */
   def createTestProbe[M](name: String): TestProbe[M] = TestProbe(name)(system)
+
+  /**
+   * Verify serialization roundtrip.
+   * Throws exception from serializer if `obj` can't be serialized and deserialized.
+   *
+   * @param obj the object to verify
+   * @param assertEquality if `true` the deserialized  object is verified to be equal to `obj`,
+   *                       and if not an `AssertionError` is thrown
+   * @return the deserialized object
+   */
+  def verifySerialization[M](obj: M, assertEquality: Boolean): M = {
+    import akka.actor.typed.scaladsl.adapter._
+    val result =
+      SerializationExtension(internalSystem.toUntyped).verifySerialization(obj.asInstanceOf[AnyRef]).asInstanceOf[M]
+    if (assertEquality && result != obj)
+      throw new AssertionError(s"verifySerialization expected $obj, but was $result")
+    result
+  }
 
   // FIXME needed for Akka internal tests but, users shouldn't spawn system actors?
   @InternalApi

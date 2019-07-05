@@ -130,7 +130,9 @@ abstract class ClusterShardingSpecConfig(val mode: String, val entityRecoveryStr
   val fifth = role("fifth")
   val sixth = role("sixth")
 
-  commonConfig(ConfigFactory.parseString(s"""
+  commonConfig(
+    ConfigFactory
+      .parseString(s"""
     akka.loglevel = INFO
     akka.actor.provider = "cluster"
     akka.remote.log-remote-lifecycle-events = off
@@ -166,17 +168,9 @@ abstract class ClusterShardingSpecConfig(val mode: String, val entityRecoveryStr
       }
     }
     akka.testconductor.barrier-timeout = 70s
-    akka.actor.serialization-bindings {
-      # some java serialization because of leveldb-shared
-      "akka.persistence.journal.AsyncWriteTarget$$WriteMessages" = java-test
-      "akka.persistence.journal.AsyncWriteTarget$$DeleteMessagesTo" = java-test
-      "akka.persistence.journal.AsyncWriteTarget$$ReplayMessages" = java-test
-      "akka.persistence.journal.AsyncWriteTarget$$ReplaySuccess" = java-test
-      "akka.persistence.journal.AsyncWriteTarget$$ReplayFailure" = java-test
-      
-      "scala.collection.immutable.Vector" = java-test
-    }
-    """).withFallback(MultiNodeClusterSpec.clusterConfig))
+    """)
+      .withFallback(SharedLeveldbJournal.configToEnableJavaSerializationForTest)
+      .withFallback(MultiNodeClusterSpec.clusterConfig))
   nodeConfig(sixth) {
     ConfigFactory.parseString("""akka.cluster.roles = ["frontend"]""")
   }

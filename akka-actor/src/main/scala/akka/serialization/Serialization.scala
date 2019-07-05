@@ -550,4 +550,19 @@ class Serialization(val system: ExtendedActorSystem) extends Extension {
     !serializedClass.getName.startsWith("java.lang.") &&
     !suppressWarningOnNonSerializationVerification(serializedClass)
   }
+
+  /**
+   * INTERNAL API: Test utility to verify serialization roundtrip.
+   * Exposed as public utility from TestKits.
+   * Throws exception from serializer if `obj` can't be serialized and
+   * deserialized.
+   *
+   * @return the deserialized object
+   */
+  @InternalApi private[akka] def verifySerialization(obj: AnyRef): AnyRef = {
+    val bytes = serialize(obj).get
+    val serializer = findSerializerFor(obj)
+    val manifest = Serializers.manifestFor(serializer, obj)
+    deserialize(bytes, serializer.identifier, manifest).get
+  }
 }

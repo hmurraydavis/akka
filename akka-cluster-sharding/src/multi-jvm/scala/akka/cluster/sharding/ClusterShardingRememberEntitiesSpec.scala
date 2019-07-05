@@ -51,7 +51,9 @@ abstract class ClusterShardingRememberEntitiesSpecConfig(val mode: String) exten
   val second = role("second")
   val third = role("third")
 
-  commonConfig(ConfigFactory.parseString(s"""
+  commonConfig(
+    ConfigFactory
+      .parseString(s"""
     akka.loglevel = INFO
     akka.actor.provider = "cluster"
     akka.cluster.auto-down-unreachable-after = 0s
@@ -71,17 +73,9 @@ abstract class ClusterShardingRememberEntitiesSpecConfig(val mode: String) exten
       dir = target/ShardingRememberEntitiesSpec/sharding-ddata
       map-size = 10 MiB
     }
-    akka.actor.serialization-bindings {
-      # some java serialization because of leveldb-shared
-      "akka.persistence.journal.AsyncWriteTarget$$WriteMessages" = java-test
-      "akka.persistence.journal.AsyncWriteTarget$$DeleteMessagesTo" = java-test
-      "akka.persistence.journal.AsyncWriteTarget$$ReplayMessages" = java-test
-      "akka.persistence.journal.AsyncWriteTarget$$ReplaySuccess" = java-test
-      "akka.persistence.journal.AsyncWriteTarget$$ReplayFailure" = java-test
-      
-      "scala.collection.immutable.Vector" = java-test
-    }
-    """).withFallback(MultiNodeClusterSpec.clusterConfig))
+    """)
+      .withFallback(SharedLeveldbJournal.configToEnableJavaSerializationForTest)
+      .withFallback(MultiNodeClusterSpec.clusterConfig))
 
   nodeConfig(third)(ConfigFactory.parseString(s"""
     akka.cluster.sharding.distributed-data.durable.lmdb {

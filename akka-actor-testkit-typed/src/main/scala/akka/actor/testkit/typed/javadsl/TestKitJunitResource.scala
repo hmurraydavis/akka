@@ -143,4 +143,9 @@ final class TestKitJunitResource(_kit: ActorTestKit) extends ExternalResource {
     testKit.shutdownTestKit()
   }
 
+  /**
+   * See corresponding method on [[ActorTestKit]]
+   */
+  def verifySerialization[M](obj: M, assertEquality: Boolean): M = testKit.verifySerialization(obj, assertEquality)
+
 }
