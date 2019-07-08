@@ -158,8 +158,7 @@ public class SerializationDocTest {
     // #external-address-default
     Address selfAddress = Cluster.get(system).selfAddress();
 
-    String serializedRef =
-        theActorRef.path().toSerializationFormatWithAddress(selfAddress)
+    String serializedRef = theActorRef.path().toSerializationFormatWithAddress(selfAddress);
     // #external-address-default
   }
 
@@ -174,8 +173,9 @@ public class SerializationDocTest {
     // Have something to serialize
     String original = "woohoo";
 
-    // Turn it into bytes, and retrieve the serializerId and manifest, which are needed for deserialization
-    byte[]  bytes = serialization.serialize(original).get();
+    // Turn it into bytes, and retrieve the serializerId and manifest, which are needed for
+    // deserialization
+    byte[] bytes = serialization.serialize(original).get();
     int serializerId = serialization.findSerializerFor(original).identifier();
     String manifest = Serializers.manifestFor(serialization.findSerializerFor(original), original);
 

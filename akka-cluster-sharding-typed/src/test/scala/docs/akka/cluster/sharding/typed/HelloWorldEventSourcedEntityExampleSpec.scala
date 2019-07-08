@@ -53,9 +53,9 @@ class HelloWorldEventSourcedEntityExampleSpec
 
     "verifySerialization" in {
       val probe = createTestProbe[Greeting]()
-      testKit.verifySerialization(Greet("Alice")(probe.ref), assertEquality = true)
-      testKit.verifySerialization(Greeting("Alice", 1), assertEquality = true)
-      testKit.verifySerialization(KnownPeople(Set.empty).add("Alice").add("Bob"), assertEquality = true)
+      serializationTestKit.verifySerialization(Greet("Alice")(probe.ref))
+      serializationTestKit.verifySerialization(Greeting("Alice", 1))
+      serializationTestKit.verifySerialization(KnownPeople(Set.empty).add("Alice").add("Bob"))
     }
 
   }

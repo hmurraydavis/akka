@@ -139,13 +139,13 @@ final class TestKitJunitResource(_kit: ActorTestKit) extends ExternalResource {
    */
   def stop[T](ref: ActorRef[T]): Unit = testKit.stop(ref)
 
+  /**
+   * Additional testing utilities for serialization.
+   */
+  def serializationTestKit: SerializationTestKit = testKit.serializationTestKit
+
   override def after(): Unit = {
     testKit.shutdownTestKit()
   }
-
-  /**
-   * See corresponding method on [[ActorTestKit]]
-   */
-  def verifySerialization[M](obj: M, assertEquality: Boolean): M = testKit.verifySerialization(obj, assertEquality)
 
 }

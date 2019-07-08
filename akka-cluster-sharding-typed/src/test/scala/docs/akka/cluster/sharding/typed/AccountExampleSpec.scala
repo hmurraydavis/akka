@@ -118,27 +118,27 @@ class AccountExampleSpec extends ScalaTestWithActorTestKit(AccountExampleSpec.co
 
     "verifySerialization" in {
       val opProbe = createTestProbe[OperationResult]()
-      testKit.verifySerialization(CreateAccount(opProbe.ref), assertEquality = true)
-      testKit.verifySerialization(Deposit(100, opProbe.ref), assertEquality = true)
-      testKit.verifySerialization(Withdraw(90, opProbe.ref), assertEquality = true)
-      testKit.verifySerialization(CloseAccount(opProbe.ref), assertEquality = true)
+      serializationTestKit.verifySerialization(CreateAccount(opProbe.ref))
+      serializationTestKit.verifySerialization(Deposit(100, opProbe.ref))
+      serializationTestKit.verifySerialization(Withdraw(90, opProbe.ref))
+      serializationTestKit.verifySerialization(CloseAccount(opProbe.ref))
 
-      testKit.verifySerialization(Confirmed, assertEquality = true)
-      testKit.verifySerialization(Rejected("overdraft"), assertEquality = true)
+      serializationTestKit.verifySerialization(Confirmed)
+      serializationTestKit.verifySerialization(Rejected("overdraft"))
 
       val getProbe = createTestProbe[CurrentBalance]()
-      testKit.verifySerialization(GetBalance(getProbe.ref), assertEquality = true)
+      serializationTestKit.verifySerialization(GetBalance(getProbe.ref))
 
-      testKit.verifySerialization(CurrentBalance(100), assertEquality = true)
+      serializationTestKit.verifySerialization(CurrentBalance(100))
 
-      testKit.verifySerialization(AccountCreated, assertEquality = true)
-      testKit.verifySerialization(Deposited(100), assertEquality = true)
-      testKit.verifySerialization(Withdrawn(90), assertEquality = true)
-      testKit.verifySerialization(AccountClosed, assertEquality = true)
+      serializationTestKit.verifySerialization(AccountCreated)
+      serializationTestKit.verifySerialization(Deposited(100))
+      serializationTestKit.verifySerialization(Withdrawn(90))
+      serializationTestKit.verifySerialization(AccountClosed)
 
-      testKit.verifySerialization(EmptyAccount, assertEquality = true)
-      testKit.verifySerialization(OpenedAccount(100), assertEquality = true)
-      testKit.verifySerialization(ClosedAccount, assertEquality = true)
+      serializationTestKit.verifySerialization(EmptyAccount)
+      serializationTestKit.verifySerialization(OpenedAccount(100))
+      serializationTestKit.verifySerialization(ClosedAccount)
     }
 
   }

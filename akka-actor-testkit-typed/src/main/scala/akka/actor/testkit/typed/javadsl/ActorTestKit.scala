@@ -200,15 +200,8 @@ final class ActorTestKit private[akka] (delegate: akka.actor.testkit.typed.scala
   def shutdownTestKit(): Unit = delegate.shutdownTestKit()
 
   /**
-   * Verify serialization roundtrip.
-   * Throws exception from serializer if `obj` can't be serialized and deserialized.
-   *
-   * @param obj the object to verify
-   * @param assertEquality if `true` the deserialized  object is verified to be equal to `obj`,
-   *                       and if not an `AssertionError` is thrown
-   * @return the deserialized object
+   * Additional testing utilities for serialization.
    */
-  def verifySerialization[M](obj: M, assertEquality: Boolean): M =
-    delegate.verifySerialization(obj, assertEquality)
+  val serializationTestKit: SerializationTestKit = new SerializationTestKit(delegate.internalSystem)
 
 }

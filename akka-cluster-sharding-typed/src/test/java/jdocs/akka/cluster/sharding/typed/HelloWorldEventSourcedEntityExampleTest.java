@@ -69,13 +69,16 @@ public class HelloWorldEventSourcedEntityExampleTest extends JUnitSuite {
   @Test
   public void testSerialization() {
     TestProbe<HelloWorld.Greeting> probe = testKit.createTestProbe(HelloWorld.Greeting.class);
-    testKit.verifySerialization(new HelloWorld.Greet("Alice", probe.getRef()), false);
+    testKit
+        .serializationTestKit()
+        .verifySerialization(new HelloWorld.Greet("Alice", probe.getRef()), false);
 
-    testKit.verifySerialization(new HelloWorld.Greeted("Alice"), false);
-    testKit.verifySerialization(new HelloWorld.Greeted("Alice"), false);
+    testKit.serializationTestKit().verifySerialization(new HelloWorld.Greeted("Alice"), false);
+    testKit.serializationTestKit().verifySerialization(new HelloWorld.Greeted("Alice"), false);
     HelloWorld.KnownPeople state = new HelloWorld.KnownPeople();
     state = state.add("Alice").add("Bob");
-    HelloWorld.KnownPeople state2 = testKit.verifySerialization(state, false);
+    HelloWorld.KnownPeople state2 =
+        testKit.serializationTestKit().verifySerialization(state, false);
     assertEquals(state.numberOfPeople(), state2.numberOfPeople());
   }
 }
