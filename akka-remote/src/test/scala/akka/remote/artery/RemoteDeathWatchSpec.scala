@@ -37,6 +37,8 @@ object RemoteDeathWatchSpec {
           aeron.image-liveness-timeout = 9 seconds
         }
     }
+    akka.actor.allow-java-serialization = on
+    akka.actor.warn-about-java-serializer-usage = off
     """).withFallback(ArterySpecSupport.defaultConfig)
 }
 
