@@ -32,7 +32,7 @@ private[akka] class ThrowableSupport(system: ExtendedActorSystem) {
     if (t.getMessage != null)
       b.setMessage(t.getMessage)
     if (t.getCause != null)
-      payloadSupport.payloadBuilder(t.getCause)
+      b.setCause(payloadSupport.payloadBuilder(t.getCause))
     val stackTrace = t.getStackTrace
     if (stackTrace != null) {
       var i = 0
