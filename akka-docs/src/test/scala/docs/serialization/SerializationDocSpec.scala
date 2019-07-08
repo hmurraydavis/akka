@@ -4,17 +4,16 @@
 
 package docs.serialization {
 
-  import akka.actor.{ ExtensionId, ExtensionIdProvider }
-  import akka.testkit._
   //#imports
-  import akka.actor.{ ActorRef, ActorSystem }
+  import akka.actor._
+  import akka.cluster.Cluster
   import akka.serialization._
-  import com.typesafe.config.ConfigFactory
 
   //#imports
+
+  import akka.testkit._
+  import com.typesafe.config.ConfigFactory
   import akka.actor.ExtendedActorSystem
-  import akka.actor.Extension
-  import akka.actor.Address
   import java.nio.charset.StandardCharsets
 
   //#my-own-serializer
@@ -136,7 +135,8 @@ package docs.serialization {
       akka {
         actor {
           serializers {
-            java = "akka.serialization.JavaSerializer"
+            jackson-json = "akka.serialization.jackson.JacksonJsonSerializer"
+            jackson-cbor = "akka.serialization.jackson.JacksonCborSerializer"
             proto = "akka.remote.serialization.ProtobufSerializer"
             myown = "docs.serialization.MyOwnSerializer"
           }
@@ -154,17 +154,17 @@ package docs.serialization {
       akka {
         actor {
           serializers {
-            java = "akka.serialization.JavaSerializer"
+            jackson-json = "akka.serialization.jackson.JacksonJsonSerializer"
+            jackson-cbor = "akka.serialization.jackson.JacksonCborSerializer"
             proto = "akka.remote.serialization.ProtobufSerializer"
             myown = "docs.serialization.MyOwnSerializer"
           }
 
           serialization-bindings {
-            "java.lang.String" = java
-            "docs.serialization.Customer" = java
+            "docs.serialization.JsonSerializable" = jackson-json
+            "docs.serialization.CborSerializable" = jackson-cbor
             "com.google.protobuf.Message" = proto
             "docs.serialization.MyOwnSerializable" = myown
-            "java.lang.Boolean" = myown
           }
         }
       }
@@ -187,19 +187,18 @@ package docs.serialization {
       // Have something to serialize
       val original = "woohoo"
 
-      // Find the Serializer for it
-      val serializer = serialization.findSerializerFor(original)
-
-      // Turn it into bytes
-      val bytes = serializer.toBinary(original)
+      // Turn it into bytes, and retrieve the serializerId and manifest, which are needed for deserialization
+      val bytes = serialization.serialize(original).get
+      val serializerId = serialization.findSerializerFor(original).identifier
+      val manifest = Serializers.manifestFor(serialization.findSerializerFor(original), original)
 
       // Turn it back into an object
-      val back = serializer.fromBinary(bytes, manifest = None)
+      val back = serialization.deserialize(bytes, serializerId, manifest).get
+      //#programmatic
 
       // Voilá!
       back should be(original)
 
-      //#programmatic
       shutdown(system)
     }
 
@@ -210,57 +209,25 @@ package docs.serialization {
       //#actorref-serializer
       // Serialize
       // (beneath toBinary)
-      val identifier: String = Serialization.serializedActorPath(theActorRef)
+      val serializedRef: String = Serialization.serializedActorPath(theActorRef)
 
       // Then serialize the identifier however you like
 
       // Deserialize
       // (beneath fromBinary)
-      val deserializedActorRef = extendedSystem.provider.resolveActorRef(identifier)
+      val deserializedRef = extendedSystem.provider.resolveActorRef(serializedRef)
       // Then use the ActorRef
       //#actorref-serializer
-
-      //#external-address
-      object ExternalAddress extends ExtensionId[ExternalAddressExt] with ExtensionIdProvider {
-        override def lookup() = ExternalAddress
-
-        override def createExtension(system: ExtendedActorSystem): ExternalAddressExt =
-          new ExternalAddressExt(system)
-
-        override def get(system: ActorSystem): ExternalAddressExt = super.get(system)
-      }
-
-      class ExternalAddressExt(system: ExtendedActorSystem) extends Extension {
-        def addressFor(remoteAddr: Address): Address =
-          system.provider
-            .getExternalAddressFor(remoteAddr)
-            .getOrElse(throw new UnsupportedOperationException("cannot send to " + remoteAddr))
-      }
-
-      def serializeTo(ref: ActorRef, remote: Address): String =
-        ref.path.toSerializationFormatWithAddress(ExternalAddress(extendedSystem).addressFor(remote))
-      //#external-address
     }
 
     "demonstrate how to do default Akka serialization of ActorRef" in {
-      val theActorSystem: ActorSystem = system
+      val theActorRef: ActorRef = system.deadLetters
 
       //#external-address-default
-      object ExternalAddress extends ExtensionId[ExternalAddressExt] with ExtensionIdProvider {
-        override def lookup() = ExternalAddress
+      val selfAddress = Cluster(system).selfAddress
 
-        override def createExtension(system: ExtendedActorSystem): ExternalAddressExt =
-          new ExternalAddressExt(system)
-
-        override def get(system: ActorSystem): ExternalAddressExt = super.get(system)
-      }
-
-      class ExternalAddressExt(system: ExtendedActorSystem) extends Extension {
-        def addressForAkka: Address = system.provider.getDefaultAddress
-      }
-
-      def serializeAkkaDefault(ref: ActorRef): String =
-        ref.path.toSerializationFormatWithAddress(ExternalAddress(theActorSystem).addressForAkka)
+      val serializedRef: String =
+        theActorRef.path.toSerializationFormatWithAddress(selfAddress)
       //#external-address-default
     }
   }
