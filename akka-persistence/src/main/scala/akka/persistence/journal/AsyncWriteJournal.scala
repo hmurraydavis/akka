@@ -202,7 +202,7 @@ trait AsyncWriteJournal extends Actor with WriteJournalBase with AsyncRecovery {
    * The batch is only for performance reasons, i.e. all messages don't have to be written
    * atomically. Higher throughput can typically be achieved by using batch inserts of many
    * records compared to inserting records one-by-one, but this aspect depends on the
-   * underlying data store and a journal implementation can implement it as efficient as
+   * underlying data store and a journal implementation can implement it as efficiently as
    * possible. Journals should aim to persist events in-order for a given `persistenceId`
    * as otherwise in case of a failure, the persistent state may be end up being inconsistent.
    *
